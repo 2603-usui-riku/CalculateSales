@@ -37,8 +37,8 @@ public class CalculateSales {
 	 */
 	public static void main(String[] args) {
 		if (args.length != 1) {
-		    //コマンドライン引数が1つ設定されていなかった場合は、
-		    //エラーメッセージをコンソールに表示します。
+			//コマンドライン引数が1つ設定されていなかった場合は、
+			//エラーメッセージをコンソールに表示します。
 			System.out.println(UNKNOWN_ERROR);
 			return;
 		}
@@ -95,33 +95,33 @@ public class CalculateSales {
 					contents.add(line);
 				}
 				if(contents.size() != 2) {
-				    //売上ファイルの行数が2行ではなかった場合は、
-				    //エラーメッセージをコンソールに表示します。
+					//売上ファイルの行数が2行ではなかった場合は、
+					//エラーメッセージをコンソールに表示します。
 					System.out.println(saleFileName + INVALID_FORMAT);
+					return;
+				}
+
+				String branchCode = contents.get(0);
+				if (!branchNames.containsKey(branchCode)) {
+					//支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
+					//エラーメッセージをコンソールに表示します。
+					System.out.println(saleFileName + INVALID_BRANCH_CODE);
 					return;
 				}
 
 				//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
 				//※詳細は後述で説明
 				String fileSale = contents.get(1);
-				if(!fileSale.matches("^\\d{1,10}$")) {
-				    //売上金額が数字ではなかった場合は、
-				    //エラーメッセージをコンソールに表示します。
+				if(!fileSale.matches("^\\d+$")) {
+					//売上金額が数字ではなかった場合は、
+					//エラーメッセージをコンソールに表示します。
 					System.out.println(UNKNOWN_ERROR);
 					return;
 				}
 				long fileSaleAmount = Long.parseLong(fileSale);
 
-				//読み込んだ売上⾦額を加算します。
+				//読み込んだ売上金額を加算します。
 				//※詳細は後述で説明
-				String branchCode = contents.get(0);
-				if (!branchNames.containsKey(branchCode)) {
-				    //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
-				    //エラーメッセージをコンソールに表示します。
-					System.out.println(saleFileName + INVALID_BRANCH_CODE);
-					return;
-				}
-
 				Long totalSaleAmount = branchSales.get(branchCode) + fileSaleAmount;
 				if(totalSaleAmount >= 10000000000L){
 					// 売上金額が11桁以上の場合、エラーメッセージをコンソールに表示します。
