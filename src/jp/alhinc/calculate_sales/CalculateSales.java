@@ -36,6 +36,13 @@ public class CalculateSales {
 	 * @param コマンドライン引数
 	 */
 	public static void main(String[] args) {
+		if (args.length != 1) {
+		    //コマンドライン引数が1つ設定されていなかった場合は、
+		    //エラーメッセージをコンソールに表示します。
+			System.out.println(UNKNOWN_ERROR);
+			return;
+		}
+
 		// 支店コードと支店名を保持するMap
 		Map<String, String> branchNames = new HashMap<>();
 		// 支店コードと売上金額を保持するMap
@@ -51,7 +58,7 @@ public class CalculateSales {
 		List<File> rcdFiles = new ArrayList<File>();
 
 		for (int i = 0; i < files.length; i++) {
-			if (files[i].getName().matches("^\\d{8}\\.rcd$")) {
+			if (files[i].isFile() && files[i].getName().matches("^\\d{8}\\.rcd$")) {
 				//対象がファイルであり、「数字8桁.rcd」なのか判定します。
 				rcdFiles.add(files[i]);
 			}
@@ -96,8 +103,14 @@ public class CalculateSales {
 
 				//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
 				//※詳細は後述で説明
-
-				long fileSale = Long.parseLong(contents.get(1));
+				String fileSale = contents.get(1);
+				if(!fileSale.matches("^\\d{1,10}$")) {
+				    //売上金額が数字ではなかった場合は、
+				    //エラーメッセージをコンソールに表示します。
+					System.out.println(UNKNOWN_ERROR);
+					return;
+				}
+				long fileSaleAmount = Long.parseLong(fileSale);
 
 				//読み込んだ売上⾦額を加算します。
 				//※詳細は後述で説明
@@ -109,15 +122,15 @@ public class CalculateSales {
 					return;
 				}
 
-				Long saleAmount = branchSales.get(branchCode) + fileSale;
-				if(saleAmount >= 10000000000L){
+				Long totalSaleAmount = branchSales.get(branchCode) + fileSaleAmount;
+				if(totalSaleAmount >= 10000000000L){
 					// 売上金額が11桁以上の場合、エラーメッセージをコンソールに表示します。
 					System.out.println(TOTAL_AMOUNT_OVER_LIMIT);
 					return;
 				}
 
 				//加算した売上金額をMapに追加します。
-				branchSales.put(branchCode, saleAmount);
+				branchSales.put(branchCode, totalSaleAmount);
 			} catch (IOException e) {
 				System.out.println(UNKNOWN_ERROR);
 				return;
