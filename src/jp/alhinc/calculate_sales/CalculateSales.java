@@ -61,7 +61,7 @@ public class CalculateSales {
 			//比較する2つのファイル名の先頭から数字の8文字を切り出し、int型に変換します。
 			if ((latter - former) != 1) {
 				//2つのファイル名の数字を比較して、差が1ではなかったら、
-				//エラーメッセージをコンソールに表⽰します。
+				//エラーメッセージをコンソールに表示します。
 				System.out.println("売上ファイル名が連番になっていません");
 				return;
 			}
@@ -70,6 +70,7 @@ public class CalculateSales {
 		//rcdFilesに複数の売上ファイルの情報を格納しているので、その数だけ繰り返します。
 		for (int i = 0; i < rcdFiles.size(); i++) {
 			ArrayList<String> contents = new ArrayList<String>();
+			String saleFileName = rcdFiles.get(i).getName();
 
 			BufferedReader br = null;
 			try {
@@ -80,6 +81,12 @@ public class CalculateSales {
 				while ((line = br.readLine()) != null) {
 					contents.add(line);
 				}
+				if(contents.size() != 2) { 
+				    //売上ファイルの行数が2行ではなかった場合は、 
+				    //エラーメッセージをコンソールに表示します。
+					System.out.println(saleFileName + "のフォーマットが不正です");
+					return;
+				}
 
 				//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
 				//※詳細は後述で説明
@@ -88,18 +95,32 @@ public class CalculateSales {
 				//読み込んだ売上⾦額を加算します。
 				//※詳細は後述で説明
 				String branchCode = contents.get(0);
+				if (!branchNames.containsKey(branchCode)) { 
+				    //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、 
+				    //エラーメッセージをコンソールに表示します。 
+					System.out.println(saleFileName + "の支店コードが不正です");
+					return;
+				} 
+				
 				Long saleAmount = branchSales.get(branchCode) + fileSale;
+				if(saleAmount >= 10000000000L){ 
+					// 売上金額が11桁以上の場合、エラーメッセージをコンソールに表示します。 
+					System.out.println("合計金額が10桁を超えました");
+					return;
+				} 
 
 				//加算した売上金額をMapに追加します。
 				branchSales.put(branchCode, saleAmount);
 			} catch (IOException e) {
 				System.out.println(UNKNOWN_ERROR);
+				return;
 			} finally {
 				if (br != null) {
 					try {
 						br.close();
 					} catch (IOException e) {
 						System.out.println(UNKNOWN_ERROR);
+						return;
 					}
 				}
 			}
