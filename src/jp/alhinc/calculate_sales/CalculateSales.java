@@ -24,6 +24,11 @@ public class CalculateSales {
 	private static final String UNKNOWN_ERROR = "予期せぬエラーが発生しました";
 	private static final String FILE_NOT_EXIST = "支店定義ファイルが存在しません";
 	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です";
+	private static final String SALES_FILE_NAME_NOT_SERIAL  = "売上ファイル名が連番になっていません";
+	private static final String INVALID_FORMAT = "のフォーマットが不正です";
+	private static final String INVALID_BRANCH_CODE = "の支店コードが不正です";
+	private static final String TOTAL_AMOUNT_OVER_LIMIT = "合計金額が10桁を超えました";
+
 
 	/**
 	 * メインメソッド
@@ -47,6 +52,7 @@ public class CalculateSales {
 
 		for (int i = 0; i < files.length; i++) {
 			if (files[i].getName().matches("^\\d{8}\\.rcd$")) {
+				//対象がファイルであり、「数字8桁.rcd」なのか判定します。
 				rcdFiles.add(files[i]);
 			}
 		}
@@ -62,7 +68,7 @@ public class CalculateSales {
 			if ((latter - former) != 1) {
 				//2つのファイル名の数字を比較して、差が1ではなかったら、
 				//エラーメッセージをコンソールに表示します。
-				System.out.println("売上ファイル名が連番になっていません");
+				System.out.println(SALES_FILE_NAME_NOT_SERIAL);
 				return;
 			}
 		}
@@ -81,33 +87,34 @@ public class CalculateSales {
 				while ((line = br.readLine()) != null) {
 					contents.add(line);
 				}
-				if(contents.size() != 2) { 
-				    //売上ファイルの行数が2行ではなかった場合は、 
+				if(contents.size() != 2) {
+				    //売上ファイルの行数が2行ではなかった場合は、
 				    //エラーメッセージをコンソールに表示します。
-					System.out.println(saleFileName + "のフォーマットが不正です");
+					System.out.println(saleFileName + INVALID_FORMAT);
 					return;
 				}
 
 				//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
 				//※詳細は後述で説明
+
 				long fileSale = Long.parseLong(contents.get(1));
 
 				//読み込んだ売上⾦額を加算します。
 				//※詳細は後述で説明
 				String branchCode = contents.get(0);
-				if (!branchNames.containsKey(branchCode)) { 
-				    //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、 
-				    //エラーメッセージをコンソールに表示します。 
-					System.out.println(saleFileName + "の支店コードが不正です");
+				if (!branchNames.containsKey(branchCode)) {
+				    //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
+				    //エラーメッセージをコンソールに表示します。
+					System.out.println(saleFileName + INVALID_BRANCH_CODE);
 					return;
-				} 
-				
+				}
+
 				Long saleAmount = branchSales.get(branchCode) + fileSale;
-				if(saleAmount >= 10000000000L){ 
-					// 売上金額が11桁以上の場合、エラーメッセージをコンソールに表示します。 
-					System.out.println("合計金額が10桁を超えました");
+				if(saleAmount >= 10000000000L){
+					// 売上金額が11桁以上の場合、エラーメッセージをコンソールに表示します。
+					System.out.println(TOTAL_AMOUNT_OVER_LIMIT);
 					return;
-				} 
+				}
 
 				//加算した売上金額をMapに追加します。
 				branchSales.put(branchCode, saleAmount);
