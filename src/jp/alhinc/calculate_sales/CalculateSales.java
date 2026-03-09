@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,22 @@ public class CalculateSales {
 			}
 		}
 
+		Collections.sort(rcdFiles);
+		//⽐較回数は売上ファイルの数よりも1回少ないため、
+		//繰り返し回数は売上ファイルのリストの数よりも1つ⼩さい数です。
+		for (int i = 0; i < rcdFiles.size() - 1; i++) {
+			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
+			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
+
+			//比較する2つのファイル名の先頭から数字の8文字を切り出し、int型に変換します。
+			if ((latter - former) != 1) {
+				//2つのファイル名の数字を比較して、差が1ではなかったら、
+				//エラーメッセージをコンソールに表⽰します。
+				System.out.println("売上ファイル名が連番になっていません");
+				return;
+			}
+		}
+
 		//rcdFilesに複数の売上ファイルの情報を格納しているので、その数だけ繰り返します。
 		for (int i = 0; i < rcdFiles.size(); i++) {
 			ArrayList<String> contents = new ArrayList<String>();
@@ -63,6 +80,7 @@ public class CalculateSales {
 				while ((line = br.readLine()) != null) {
 					contents.add(line);
 				}
+
 				//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
 				//※詳細は後述で説明
 				long fileSale = Long.parseLong(contents.get(1));
@@ -109,7 +127,7 @@ public class CalculateSales {
 
 		try {
 			File file = new File(path, fileName);
-			if(!file.exists()) {
+			if (!file.exists()) {
 				//支店定義ファイルが存在しない場合、コンソールにエラーメッセージを表示します。
 				System.out.println("支店定義ファイルが存在しません");
 				return false;
@@ -123,10 +141,10 @@ public class CalculateSales {
 			while ((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] lines = line.split(",");
-				
-				if((lines.length != 2) || (!lines[0].matches("^\\d{3}$"))){
-				    //支店定義ファイルの仕様が満たされていない場合、
-				    //エラーメッセージをコンソールに表示します。
+
+				if ((lines.length != 2) || (!lines[0].matches("^\\d{3}$"))) {
+					//支店定義ファイルの仕様が満たされていない場合、
+					//エラーメッセージをコンソールに表示します。
 					System.out.println("支店定義ファイルのフォーマットが不正です");
 					return false;
 				}
