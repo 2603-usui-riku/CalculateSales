@@ -129,7 +129,7 @@ public class CalculateSales {
 			File file = new File(path, fileName);
 			if (!file.exists()) {
 				//支店定義ファイルが存在しない場合、コンソールにエラーメッセージを表示します。
-				System.out.println("支店定義ファイルが存在しません");
+				System.out.println(FILE_NOT_EXIST);
 				return false;
 			}
 
@@ -145,7 +145,7 @@ public class CalculateSales {
 				if ((lines.length != 2) || (!lines[0].matches("^\\d{3}$"))) {
 					//支店定義ファイルの仕様が満たされていない場合、
 					//エラーメッセージをコンソールに表示します。
-					System.out.println("支店定義ファイルのフォーマットが不正です");
+					System.out.println(FILE_INVALID_FORMAT);
 					return false;
 				}
 
