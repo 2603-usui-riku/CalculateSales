@@ -72,7 +72,7 @@ public class CalculateSales {
 				String branchCode = contents.get(0);
 				Long saleAmount = branchSales.get(branchCode) + fileSale;
 
-				//加算した売上⾦額をMapに追加します。
+				//加算した売上金額をMapに追加します。
 				branchSales.put(branchCode, saleAmount);
 			} catch (IOException e) {
 				System.out.println(UNKNOWN_ERROR);
@@ -109,6 +109,12 @@ public class CalculateSales {
 
 		try {
 			File file = new File(path, fileName);
+			if(!file.exists()) {
+				//支店定義ファイルが存在しない場合、コンソールにエラーメッセージを表示します。
+				System.out.println("支店定義ファイルが存在しません");
+				return false;
+			}
+
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
@@ -117,6 +123,14 @@ public class CalculateSales {
 			while ((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] lines = line.split(",");
+				
+				if((lines.length != 2) || (!lines[0].matches("^\\d{3}$"))){
+				    //支店定義ファイルの仕様が満たされていない場合、
+				    //エラーメッセージをコンソールに表示します。
+					System.out.println("支店定義ファイルのフォーマットが不正です");
+					return false;
+				}
+
 				branchNames.put(lines[0], lines[1]);
 				branchSales.put(lines[0], 0L);
 			}
